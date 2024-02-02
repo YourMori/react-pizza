@@ -1,7 +1,8 @@
 import React from "react";
-
+import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { setCategoryId } from "../redux/slices/filterSlice";
+
+import { setCategoryId, setCurrentPage } from "../redux/slices/filterSlice";
 
 import Categories from "../components/Categories";
 import Sort from "../components/Sort";
@@ -12,15 +13,20 @@ import { SearchContext } from "../App";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const { categoryId, sort } = useSelector((state) => state.filter);
+  const { categoryId, currentPage, sort } = useSelector(
+    (state) => state.filter
+  );
 
   const { searchValue } = React.useContext(SearchContext);
   const [pizzas, setPizzas] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
-  const [currentPage, setCurrentPage] = React.useState(1);
 
   const onChangeCategory = (id) => {
     dispatch(setCategoryId(id));
+  };
+
+  const onChangePage = (page) => {
+    dispatch(setCurrentPage(page));
   };
 
   React.useEffect(() => {
@@ -28,16 +34,14 @@ const Home = () => {
     const category = categoryId > 0 ? `category=${categoryId}` : "";
     const order = sort.sortProperty.includes("-") ? "order=desc" : "order=asc";
     const sortyBy = `sortBy=${sort.sortProperty.replace("-", "")}`;
-    //const search = searchValue ? `search=${searchValue}` : "";
+    // const search = searchValue ? `search=${searchValue}` : "";
 
-    fetch(
+    axios(
       `https://65b1037ad16d31d11bddd342.mockapi.io/pizzas?page=${currentPage}&limit=4&${category}&${sortyBy}&${order}`
-    )
-      .then((res) => res.json())
-      .then((arr) => {
-        setPizzas(arr);
-        setIsLoading(false);
-      });
+    ).then((res) => {
+      setPizzas(res.data);
+      setIsLoading(false);
+    });
     window.scroll(0, 0);
   }, [categoryId, sort.sortProperty, searchValue, currentPage]);
 
@@ -55,7 +59,7 @@ const Home = () => {
       </div>
       <h2 className="content__title">Все пиццы</h2>
       <div className="content__items">{isLoading ? sceletons : items}</div>
-      <Pagination setCurrentPage={(number) => setCurrentPage(number)} />
+      <Pagination setCurrentPage={onChangePage} />
     </>
   );
 };

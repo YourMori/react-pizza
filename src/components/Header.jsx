@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+
 import Search from "./Search";
 
 import logoSvg from "../assets/img/pizza-logo.svg";
