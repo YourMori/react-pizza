@@ -31,6 +31,12 @@ const Home = () => {
   const [pizzas, setPizzas] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
 
+  const filtred = pizzas.filter((obj) =>
+    obj.title.toLowerCase().includes(searchValue.toLowerCase()) ? true : false
+  );
+  const items = filtred.map((obj) => <PizzaBlock key={obj.id} {...obj} />);
+  const sceletons = [...new Array(8)].map((_, i) => <Skeleton key={i} />);
+
   const onChangeCategory = (id) => {
     dispatch(setCategoryId(id));
   };
@@ -83,12 +89,6 @@ const Home = () => {
     }
     isSearch.current = false;
   }, [categoryId, sort.sortProperty, searchValue, currentPage]);
-
-  const filtred = pizzas.filter((obj) =>
-    obj.title.toLowerCase().includes(searchValue.toLowerCase()) ? true : false
-  );
-  const items = filtred.map((obj) => <PizzaBlock key={obj.id} {...obj} />);
-  const sceletons = [...new Array(8)].map((_, i) => <Skeleton key={i} />);
 
   return (
     <>
