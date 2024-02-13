@@ -1,14 +1,17 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { addItem, deleteItem, removeItem } from "../redux/slices/cartSlice";
+import {
+  addItem,
+  deleteItem,
+  removeItem,
+  selectItemsById,
+} from "../redux/slices/cartSlice";
 
 const CartItem = ({ id, title, price, imageUrl, sizes, types }) => {
   const dispatch = useDispatch();
 
-  const item = useSelector((state) =>
-    state.cartSlice.items.find((obj) => obj.id === id)
-  );
+  const item = useSelector(selectItemsById(id));
   const addedCount = item ? item.count : 0;
 
   const onClickMinus = () => {

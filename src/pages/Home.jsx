@@ -4,30 +4,28 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 import {
+  selectFilter,
   setCategoryId,
   setCurrentPage,
   setFilters,
 } from "../redux/slices/filterSlice";
-import { fetchPizzas } from "../redux/slices/pizzaSlice";
+import { fetchPizzas, selectPizzaData } from "../redux/slices/pizzaSlice";
 
 import Categories from "../components/Categories";
 import Sort, { list } from "../components/Sort";
 import PizzaBlock from "../components/PizzaBlock";
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import Pagination from "../components/Pagination";
-import { SearchContext } from "../App";
 
 const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isSearch = React.useRef(false);
   const isMounted = React.useRef(false);
-  const { searchValue } = React.useContext(SearchContext);
 
-  const { categoryId, currentPage, sort } = useSelector(
-    (state) => state.filter
-  );
-  const { items, status } = useSelector((state) => state.pizzaSlice);
+  const { searchValue, categoryId, currentPage, sort } =
+    useSelector(selectFilter);
+  const { items, status } = useSelector(selectPizzaData);
 
   const filtred = items.filter((obj) =>
     obj.title.toLowerCase().includes(searchValue.toLowerCase()) ? true : false
