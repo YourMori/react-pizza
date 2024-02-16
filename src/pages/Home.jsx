@@ -1,7 +1,7 @@
 import React from "react";
 import qs from "qs";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import {
   selectFilter,
@@ -30,7 +30,11 @@ const Home = () => {
   const filtred = items.filter((obj) =>
     obj.title.toLowerCase().includes(searchValue.toLowerCase()) ? true : false
   );
-  const pizzas = filtred.map((obj) => <PizzaBlock key={obj.id} {...obj} />);
+  const pizzas = filtred.map((obj) => (
+    <Link key={obj.id} v to={`/pizza/${obj.id}`}>
+      <PizzaBlock {...obj} />
+    </Link>
+  ));
   const sceletons = [...new Array(8)].map((_, i) => <Skeleton key={i} />);
 
   const onChangeCategory = (id) => {
