@@ -3,12 +3,7 @@ import qs from "qs";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
-import {
-  selectFilter,
-  setCategoryId,
-  setCurrentPage,
-  setFilters,
-} from "../redux/slices/filterSlice";
+import { selectFilter, setCategoryId, setCurrentPage, setFilters } from "../redux/slices/filterSlice";
 import { fetchPizzas, selectPizzaData } from "../redux/slices/pizzaSlice";
 
 import Categories from "../components/Categories";
@@ -17,31 +12,28 @@ import PizzaBlock from "../components/PizzaBlock";
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import Pagination from "../components/Pagination";
 
-const Home = () => {
+const Home: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isSearch = React.useRef(false);
   const isMounted = React.useRef(false);
 
-  const { searchValue, categoryId, currentPage, sort } =
-    useSelector(selectFilter);
+  const { searchValue, categoryId, currentPage, sort } = useSelector(selectFilter);
   const { items, status } = useSelector(selectPizzaData);
 
-  const filtred = items.filter((obj) =>
-    obj.title.toLowerCase().includes(searchValue.toLowerCase()) ? true : false
-  );
-  const pizzas = filtred.map((obj) => (
-    <Link key={obj.id} v to={`/pizza/${obj.id}`}>
+  const filtred = items.filter((obj: any) => (obj.title.toLowerCase().includes(searchValue.toLowerCase()) ? true : false));
+  const pizzas = filtred.map((obj: any) => (
+    <Link key={obj.id} to={`/pizza/${obj.id}`}>
       <PizzaBlock {...obj} />
     </Link>
   ));
   const sceletons = [...new Array(8)].map((_, i) => <Skeleton key={i} />);
 
-  const onChangeCategory = (id) => {
+  const onChangeCategory = (id: number) => {
     dispatch(setCategoryId(id));
   };
 
-  const onChangePage = (page) => {
+  const onChangePage = (page: number) => {
     dispatch(setCurrentPage(page));
   };
 
@@ -51,7 +43,10 @@ const Home = () => {
     const sortyBy = `sortBy=${sort.sortProperty.replace("-", "")}`;
     // const search = searchValue ? `search=${searchValue}` : "";
 
-    dispatch(fetchPizzas({ category, order, sortyBy, currentPage }));
+    dispatch(
+      // @ts-ignore
+      fetchPizzas({ category, order, sortyBy, currentPage })
+    );
 
     window.scroll(0, 0);
   };
@@ -96,21 +91,12 @@ const Home = () => {
       {status === "error" ? (
         <div className="content__error-info">
           <h2>Произошла ошибка 😕</h2>
-          <p>
-            К сожалению, не удалось получить питсы. Попробуйте повторить попытку
-            позже.
-          </p>
+          <p>К сожалению, не удалось получить питсы. Попробуйте повторить попытку позже.</p>
         </div>
       ) : (
-        <div className="content__items">
-          {status === "loading" ? sceletons : pizzas}
-        </div>
+        <div className="content__items">{status === "loading" ? sceletons : pizzas}</div>
       )}
-      {status !== "error" ? (
-        <Pagination setCurrentPage={onChangePage} />
-      ) : (
-        <></>
-      )}
+      {status !== "error" ? <Pagination setCurrentPage={onChangePage} /> : <></>}
     </>
   );
 };

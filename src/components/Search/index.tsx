@@ -1,53 +1,43 @@
 import React from "react";
 import debounce from "lodash.debounce";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import { setSearchValue } from "../../redux/slices/filterSlice";
 
 import styles from "./Search.module.scss";
 
-const Search = () => {
+const Search: React.FC = () => {
   const dispatch = useDispatch();
-  const [localValue, setLocalValue] = React.useState("");
-  const inputRef = React.useRef();
+  const [localValue, setLocalValue] = React.useState<string>("");
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const onClickClear = () => {
     setLocalValue("");
     dispatch(setSearchValue(""));
-    inputRef.current.focus();
+    inputRef.current?.focus();
   };
 
   const updateSearchValue = React.useCallback(
-    debounce((str) => {
+    debounce((str: string) => {
       dispatch(setSearchValue(str));
     }, 350),
     []
   );
 
-  const onChangeInput = (e) => {
+  const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalValue(e.target.value);
     updateSearchValue(e.target.value);
   };
 
   return (
     <div className={styles.root}>
-      <svg
-        className={styles.search}
-        viewBox="0 0 32 32"
-        xmlns="http://www.w3.org/2000/svg"
-      >
+      <svg className={styles.search} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <title />
         <g id="search">
           <path d="M29.71,28.29l-6.5-6.5-.07,0a12,12,0,1,0-1.39,1.39s0,.05,0,.07l6.5,6.5a1,1,0,0,0,1.42,0A1,1,0,0,0,29.71,28.29ZM14,24A10,10,0,1,1,24,14,10,10,0,0,1,14,24Z" />
         </g>
       </svg>
-      <input
-        ref={inputRef}
-        value={localValue}
-        onChange={onChangeInput}
-        className={styles.input}
-        placeholder="Поиск пиццы..."
-      ></input>
+      <input ref={inputRef} value={localValue} onChange={onChangeInput} className={styles.input} placeholder="Поиск пиццы..."></input>
       {localValue && (
         <svg
           onClick={onClickClear}
