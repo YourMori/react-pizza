@@ -1,24 +1,24 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
-import { selectSort, setSort } from "../redux/slices/filterSlice";
+import { SortName, SortPropertyEnum, selectSort, setSort } from "../redux/slices/filterSlice";
 
-type popupClick = MouseEvent & {
+type PopupClick = MouseEvent & {
   Node: [];
 };
 
-type SortItem = {
-  name: string;
-  sortProperty: string;
+export type SortItem = {
+  name: SortName;
+  sortProperty: SortPropertyEnum;
 };
 
-export const list: SortItem[] = [
-  { name: "популярности(desc)", sortProperty: "-rating" },
-  { name: "популярности(asc)", sortProperty: "rating" },
-  { name: "цене(desc)", sortProperty: "-price" },
-  { name: "цене(asc)", sortProperty: "price" },
-  { name: "алфавиту(desc)", sortProperty: "-title" },
-  { name: "алфавиту(asc)", sortProperty: "title" },
+export const sortList: SortItem[] = [
+  { name: SortName.RATING_ASC, sortProperty: SortPropertyEnum.RATING_ASC },
+  { name: SortName.RATING_DESC, sortProperty: SortPropertyEnum.RATING_DESC },
+  { name: SortName.PRICE_ASC, sortProperty: SortPropertyEnum.PRICE_ASC },
+  { name: SortName.PRICE_DESC, sortProperty: SortPropertyEnum.PRICE_DESC },
+  { name: SortName.TITLE_ASC, sortProperty: SortPropertyEnum.TITLE_ASC },
+  { name: SortName.TITLE_DESC, sortProperty: SortPropertyEnum.RATING_DESC },
 ];
 
 const Sort: React.FC = () => {
@@ -35,7 +35,7 @@ const Sort: React.FC = () => {
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const _event = event as popupClick;
+      const _event = event as PopupClick;
       if (sortRef.current && !_event.composedPath().includes(sortRef.current)) {
         setIsVisible(false);
       }
@@ -63,7 +63,7 @@ const Sort: React.FC = () => {
       {isVisible && (
         <div className="sort__popup">
           <ul>
-            {list.map((obj, i) => (
+            {sortList.map((obj, i) => (
               <li key={i} onClick={() => onClickListItem(obj)} className={sort.sortProperty === obj.sortProperty ? "active" : ""}>
                 {obj.name}
               </li>

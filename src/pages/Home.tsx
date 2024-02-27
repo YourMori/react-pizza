@@ -1,20 +1,21 @@
 import React from "react";
 import qs from "qs";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
 import { selectFilter, setCategoryId, setCurrentPage, setFilters } from "../redux/slices/filterSlice";
-import { fetchPizzas, selectPizzaData } from "../redux/slices/pizzaSlice";
+import { SearchPizzaParams, fetchPizzas, selectPizzaData } from "../redux/slices/pizzaSlice";
 
 import Categories from "../components/Categories";
-import Sort, { list } from "../components/Sort";
+import Sort, { sortList } from "../components/Sort";
 import PizzaBlock from "../components/PizzaBlock";
 import Skeleton from "../components/PizzaBlock/Skeleton";
 import Pagination from "../components/Pagination";
+import { useAppDispatch } from "../redux/store";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isSearch = React.useRef(false);
   const isMounted = React.useRef(false);
 
@@ -22,11 +23,7 @@ const Home: React.FC = () => {
   const { items, status } = useSelector(selectPizzaData);
 
   const filtred = items.filter((obj: any) => (obj.title.toLowerCase().includes(searchValue.toLowerCase()) ? true : false));
-  const pizzas = filtred.map((obj: any) => (
-    <Link key={obj.id} to={`/pizza/${obj.id}`}>
-      <PizzaBlock {...obj} />
-    </Link>
-  ));
+  const pizzas = filtred.map((obj: any) => <PizzaBlock {...obj} />);
   const sceletons = [...new Array(8)].map((_, i) => <Skeleton key={i} />);
 
   const onChangeCategory = (id: number) => {
@@ -43,10 +40,7 @@ const Home: React.FC = () => {
     const sortyBy = `sortBy=${sort.sortProperty.replace("-", "")}`;
     // const search = searchValue ? `search=${searchValue}` : "";
 
-    dispatch(
-      // @ts-ignore
-      fetchPizzas({ category, order, sortyBy, currentPage })
-    );
+    dispatch(fetchPizzas({ category, order, sortyBy, currentPage: String(currentPage) }));
 
     window.scroll(0, 0);
   };
@@ -65,9 +59,16 @@ const Home: React.FC = () => {
 
   React.useEffect(() => {
     if (window.location.search) {
-      const params = qs.parse(window.location.search.substring(1));
-      const sort = list.find((obj) => obj.sortProperty === params.sort);
-      dispatch(setFilters({ ...params, sort }));
+      const params = qs.parse(window.location.search.substring(1)) as unknown as SearchPizzaParams;
+      const sort = sortList.find((obj) => obj.sortProperty === params.sortyBy);
+      dispatch(
+        setFilters({
+          categoryId: Number(params.category),
+          currentPage: Number(params.currentPage),
+          sort: sort || sortList[0],
+          searchValue: "",
+        })
+      );
       isSearch.current = true;
     }
   }, []);

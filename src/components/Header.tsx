@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import Search from "./Search/index";
 
 import logoSvg from "../assets/img/pizza-logo.svg";
-import { selectItems } from "../redux/slices/cartSlice.js";
+import { selectItems } from "../redux/slices/cartSlice";
 
 const Header: React.FC = () => {
   const location = useLocation();
